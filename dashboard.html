@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | Barangay Corregidor</title>
+  <link rel="icon" type="image/png" href="logo-circle.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="logo-circle.png" alt="Logo" class="sidebar-logo" onerror="this.style.display='none'">
+      <div>
+        <div class="brand-title">Barangay Corregidor</div>
+        <div class="brand-sub">ADMIN PANEL</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="showView('dashboard', this); return false;">Dashboard</a>
+      <a href="#" class="nav-item" onclick="showView('requests', this); return false;">Requests</a>
+      <a href="#" class="nav-item" onclick="showView('residents', this); return false;">Residents</a>
+      <a href="#" class="nav-item" onclick="showView('reports', this); return false;">Reports</a>
+    </nav>
+
+    <button class="sidebar-logout" type="button" onclick="adminLogout()">Log Out</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1 id="page-title">Dashboard</h1>
+      <div class="topbar-user" id="admin-name">Staff Account</div>
+    </header>
+
+    <div id="view-dashboard" class="view active">
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-num" id="stat-total">0</div>
+          <div class="stat-label">Total Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-pending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-processing">0</div>
+          <div class="stat-label">Processing</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="stat-ready">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+      </section>
+
+      <section class="table-section">
+        <div class="section-head">
+          <h2>Recent Requests</h2>
+          <button class="btn-refresh" type="button" onclick="loadRequests()">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Resident</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="requests-body">
+              <tr><td colspan="5" class="empty">No requests yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="view-requests" class="view">
+      <section class="table-section">
+        <div class="section-head">
+          <h2>All Requests</h2>
+          <div>
+            <button class="btn-refresh" type="button" onclick="loadRequests()">Refresh</button>
+            <button class="btn-clear" type="button" onclick="clearRequests()">Clear History</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Document</th>
+                <th>Resident</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="requests-body-2">
+              <tr><td colspan="5" class="empty">No requests yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="view-residents" class="view">
+      <section class="table-section">
+        <h2 style="margin-bottom:1rem">Residents</h2>
+        <p class="muted">Residents who submitted requests (demo).</p>
+        <div id="residents-list" style="margin-top:1rem"></div>
+      </section>
+    </div>
+
+    <div id="view-reports" class="view">
+      <section class="table-section">
+        <h2 style="margin-bottom:1rem">Reports</h2>
+        <p class="muted" style="margin-bottom:1rem">Simple summary (demo).</p>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num" id="rep-total">0</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="rep-pending">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="rep-done">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="cert-modal" class="cert-modal" style="display:none">
+    <div class="cert-modal-backdrop" onclick="closeCertificate()"></div>
+    <div class="cert-modal-box">
+      <div class="cert-toolbar">
+        <button type="button" onclick="window.print()">Print / Save PDF</button>
+        <button type="button" onclick="closeCertificate()">Close</button>
+      </div>
+      <div class="certificate" id="certificate-paper">
+        <div class="cert-header">
+          <img src="logo-circle.png" alt="Logo" class="cert-logo" onerror="this.style.display='none'">
+          <p>Republic of the Philippines</p>
+          <p>Province of Cavite</p>
+          <p>City of General Trias</p>
+          <h2>BARANGAY CORREGIDOR</h2>
+          <p class="cert-office">OFFICE OF THE PUNONG BARANGAY</p>
+        </div>
+        <hr class="cert-line">
+        <h3 class="cert-title">BARANGAY CERTIFICATION / CLEARANCE</h3>
+        <p class="cert-to">TO WHOM IT MAY CONCERN:</p>
+        <p class="cert-body">
+          This is to certify that
+          <strong id="c-name">[FULL NAME]</strong>,
+          <strong id="c-age">[AGE]</strong> years old,
+          <strong id="c-civil">[CIVIL STATUS]</strong>, Filipino,
+          is a bonafide resident of
+          <strong id="c-address">[COMPLETE ADDRESS]</strong>,
+          Barangay Corregidor, City of General Trias, Cavite,
+          for <strong id="c-years">[NUMBER]</strong> year(s).
+        </p>
+        <p class="cert-body">
+          This further certifies that, based on the records of this office,
+          the above-named person has no derogatory record, pending case,
+          or complaint filed against him/her in this barangay as of the date of issuance.
+        </p>
+        <p class="cert-body">
+          This certification/clearance is issued upon the request of the above-named person for
+          <strong id="c-purpose">[PURPOSE]</strong>
+          and for whatever legal purpose it may serve.
+        </p>
+        <p class="cert-body">
+          Issued this <strong id="c-day">[DAY]</strong> day of
+          <strong id="c-month">[MONTH]</strong>,
+          <strong id="c-year">[YEAR]</strong>
+          at Barangay Corregidor, City of General Trias, Cavite, Philippines.
+        </p>
+        <div class="cert-signs">
+          <div>
+            <p class="cert-sign-name" id="c-sign-name">[FULL NAME]</p>
+            <p class="cert-sign-label">Applicant's Signature / Thumbmark</p>
+          </div>
+          <div>
+            <p class="cert-sign-name">HON. [PUNONG BARANGAY]</p>
+            <p class="cert-sign-label">Punong Barangay</p>
+          </div>
+        </div>
+        <p class="cert-footer">
+          Control No.: ________ &nbsp; O.R. No.: ________ &nbsp;
+          Amount Paid: ₱________ &nbsp; Date Paid: ________
+        </p>
+        <p class="cert-note">Not valid without the official dry seal of Barangay Corregidor.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openCertificate(id) {
+      var requests = JSON.parse(localStorage.getItem('myRequests') || '[]');
+      var data = requests.find(function (r) { return String(r.id) === String(id); });
+      if (!data) {
+        alert('Request not found');
+        return;
+      }
+      document.getElementById('c-name').textContent = data.name || '—';
+      document.getElementById('c-age').textContent = data.age || '—';
+      document.getElementById('c-civil').textContent = data.civil || '—';
+      document.getElementById('c-address').textContent = data.address || '—';
+      document.getElementById('c-years').textContent = data.years || '—';
+      document.getElementById('c-purpose').textContent = data.purpose || '—';
+      document.getElementById('c-sign-name').textContent = data.name || '—';
+      var now = new Date();
+      document.getElementById('c-day').textContent = now.getDate();
+      document.getElementById('c-month').textContent = now.toLocaleString('en', { month: 'long' });
+      document.getElementById('c-year').textContent = now.getFullYear();
+      document.getElementById('cert-modal').style.display = 'flex';
+    }
+
+    function closeCertificate() {
+      document.getElementById('cert-modal').style.display = 'none';
+    }
+
+    function showView(name, el) {
+      document.querySelectorAll('.view').forEach(function (v) {
+        v.classList.remove('active');
+      });
+      var view = document.getElementById('view-' + name);
+      if (view) view.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(function (n) {
+        n.classList.remove('active');
+      });
+      if (el) el.classList.add('active');
+      var titles = {
+        dashboard: 'Dashboard',
+        requests: 'Requests',
+        residents: 'Residents',
+        reports: 'Reports'
+      };
+      document.getElementById('page-title').textContent = titles[name] || 'Dashboard';
+      if (name === 'dashboard' || name === 'requests') loadRequests();
+      if (name === 'residents') loadResidents();
+      if (name === 'reports') loadReports();
+    }
+
+    function loadRequests() {
+      var requests = JSON.parse(localStorage.getItem('myRequests') || '[]');
+
+      document.getElementById('stat-total').textContent = requests.length;
+      document.getElementById('stat-pending').textContent =
+        requests.filter(function (r) { return r.status === 'Pending'; }).length;
+      document.getElementById('stat-processing').textContent =
+        requests.filter(function (r) { return r.status === 'Processing'; }).length;
+      document.getElementById('stat-ready').textContent =
+        requests.filter(function (r) {
+          return r.status === 'Completed' || r.status === 'Ready for release';
+        }).length;
+
+      var htmlDash = '';
+      if (!requests.length) {
+        htmlDash = '<tr><td colspan="5" class="empty">No requests yet</td></tr>';
+      } else {
+        htmlDash = requests.map(function (r) {
+          return (
+            '<tr>' +
+              '<td>' + (r.document || '—') + '</td>' +
+              '<td>' + (r.name || '—') + '</td>' +
+              '<td>' + (r.date || '—') + '</td>' +
+              '<td><span class="chip ' + chipClass(r.status) + '">' + r.status + '</span></td>' +
+              '<td class="action-cell">' +
+                (r.status === 'Pending'
+                  ? '<button type="button" class="btn-approve" onclick="updateStatus(' + r.id + ', \'Approved\')">Approve</button>' +
+                    '<button type="button" class="btn-reject" onclick="updateStatus(' + r.id + ', \'Rejected\')">Reject</button>'
+                  : '') +
+                '<select onchange="updateStatus(' + r.id + ', this.value)">' +
+                  '<option value="Pending"' + (r.status === 'Pending' ? ' selected' : '') + '>Pending</option>' +
+                  '<option value="Approved"' + (r.status === 'Approved' ? ' selected' : '') + '>Approved</option>' +
+                  '<option value="Processing"' + (r.status === 'Processing' ? ' selected' : '') + '>Processing</option>' +
+                  '<option value="Completed"' + (r.status === 'Completed' ? ' selected' : '') + '>Completed</option>' +
+                  '<option value="Rejected"' + (r.status === 'Rejected' ? ' selected' : '') + '>Rejected</option>' +
+                '</select>' +
+              '</td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      var htmlReq = '';
+      if (!requests.length) {
+        htmlReq = '<tr><td colspan="5" class="empty">No requests yet</td></tr>';
+      } else {
+        htmlReq = requests.map(function (r) {
+          return (
+            '<tr>' +
+              '<td>' + (r.document || '—') + '</td>' +
+              '<td>' + (r.name || '—') + '</td>' +
+              '<td>' + (r.date || '—') + '</td>' +
+              '<td><span class="chip ' + chipClass(r.status) + '">' + r.status + '</span></td>' +
+              '<td class="action-cell">' +
+                '<select onchange="updateStatus(' + r.id + ', this.value)">' +
+                  '<option value="Pending"' + (r.status === 'Pending' ? ' selected' : '') + '>Pending</option>' +
+                  '<option value="Approved"' + (r.status === 'Approved' ? ' selected' : '') + '>Approved</option>' +
+                  '<option value="Processing"' + (r.status === 'Processing' ? ' selected' : '') + '>Processing</option>' +
+                  '<option value="Completed"' + (r.status === 'Completed' ? ' selected' : '') + '>Completed</option>' +
+                  '<option value="Rejected"' + (r.status === 'Rejected' ? ' selected' : '') + '>Rejected</option>' +
+                '</select>' +
+                '<button type="button" class="btn-cert" onclick="openCertificate(' + r.id + ')">View Certificate</button>' +
+              '</td>' +
+            '</tr>'
+          );
+        }).join('');
+      }
+
+      var body1 = document.getElementById('requests-body');
+      var body2 = document.getElementById('requests-body-2');
+      if (body1) body1.innerHTML = htmlDash;
+      if (body2) body2.innerHTML = htmlReq;
+    }
+
+    function loadResidents() {
+      var requests = JSON.parse(localStorage.getItem('myRequests') || '[]');
+      var names = {};
+      requests.forEach(function (r) {
+        if (r.name) names[r.name] = (names[r.name] || 0) + 1;
+      });
+      var list = document.getElementById('residents-list');
+      var keys = Object.keys(names);
+      if (!keys.length) {
+        list.innerHTML = '<p class="muted">No residents yet.</p>';
+        return;
+      }
+      list.innerHTML = keys.map(function (n) {
+        return (
+          '<div class="stat-card" style="margin-bottom:0.5rem">' +
+            '<strong>' + n + '</strong> — ' + names[n] + ' request(s)' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function loadReports() {
+      var requests = JSON.parse(localStorage.getItem('myRequests') || '[]');
+      document.getElementById('rep-total').textContent = requests.length;
+      document.getElementById('rep-pending').textContent =
+        requests.filter(function (r) { return r.status === 'Pending'; }).length;
+      document.getElementById('rep-done').textContent =
+        requests.filter(function (r) {
+          return r.status === 'Completed' || r.status === 'Ready for release' || r.status === 'Released';
+        }).length;
+    }
+
+    function chipClass(s) {
+      if (s === 'Approved') return 'approved';
+      if (s === 'Processing') return 'processing';
+      if (s === 'Completed') return 'completed';
+      if (s === 'Rejected') return 'rejected';
+      if (s === 'Ready for release') return 'ready';
+      if (s === 'Released') return 'released';
+      return 'pending';
+    }
+
+    function updateStatus(id, status) {
+      var requests = JSON.parse(localStorage.getItem('myRequests') || '[]');
+      var i = requests.findIndex(function (r) {
+        return String(r.id) === String(id);
+      });
+      if (i !== -1) {
+        requests[i].status = status;
+        localStorage.setItem('myRequests', JSON.stringify(requests));
+        loadRequests();
+      } else {
+        alert('Request not found');
+      }
+    }
+
+    function clearRequests() {
+      if (!confirm('Delete ALL request history? This cannot be undone.')) return;
+      localStorage.removeItem('myRequests');
+      loadRequests();
+      alert('All requests cleared.');
+    }
+
+    function adminLogout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userName');
+      window.location.href = 'index.html';
+    }
+
+    (function () {
+      var loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      var role = localStorage.getItem('userRole');
+      if (!loggedIn || role !== 'Staff Account') {
+        window.location.href = 'index.html#login';
+        return;
+      }
+      document.getElementById('admin-name').textContent =
+        localStorage.getItem('userName') || 'Staff Account';
+      loadRequests();
+    })();
+  </script>
+</body>
+</html>

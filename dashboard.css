@@ -1,0 +1,515 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0f;
+  --card: #12121a;
+  --border: #1e1e2a;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --gold: #eab308;
+  --blue: #2563eb;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: #0f0f16;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.sidebar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.brand-sub {
+  font-size: 0.7rem;
+  color: var(--gold);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.nav-item {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background: rgba(37, 99, 235, 0.15);
+  color: #fff;
+}
+
+.sidebar-logout {
+  margin-top: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sidebar-logout:hover {
+  border-color: #64748b;
+}
+
+.main {
+  margin-left: 260px;
+  flex: 1;
+  padding: 1.5rem 2rem;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+}
+
+.topbar h1 {
+  font-size: 1.5rem;
+}
+
+.topbar-user {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.stat-num {
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.table-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-head h2 {
+  font-size: 1.1rem;
+}
+
+.btn-refresh {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.btn-refresh:hover {
+  opacity: 0.9;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.chip.pending {
+  background: rgba(183, 193, 222, 0.2);
+  color: #b7c1de;
+}
+
+.chip.processing {
+  background: #1d2b56;
+  color: #6f97f5;
+}
+
+.chip.ready {
+  background: #313037;
+  color: #f2b93b;
+}
+
+.chip.released {
+  background: #163642;
+  color: #4ade80;
+}
+
+select {
+  background: #0f0f16;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main {
+    margin-left: 0;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.btn-cert {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.btn-cert:hover {
+  opacity: 0.9;
+}
+
+
+.cert-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cert-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.cert-modal-box {
+  position: relative;
+  max-height: 95vh;
+  overflow: auto;
+  z-index: 1;
+  padding: 1rem;
+}
+
+.cert-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.cert-toolbar button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.certificate {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  color: #111;
+  padding: 20mm 18mm;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: 1.55;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cert-header {
+  text-align: center;
+}
+
+.cert-logo {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 0.35rem;
+  object-fit: cover;
+}
+
+.cert-header p {
+  margin: 0;
+  font-size: 11pt;
+}
+
+.cert-header h2 {
+  margin: 0.35rem 0 0;
+  font-size: 14pt;
+  letter-spacing: 0.02em;
+}
+
+.cert-office {
+  font-weight: 700;
+  margin-top: 0.15rem !important;
+}
+
+.cert-line {
+  border: none;
+  border-top: 2px solid #111;
+  margin: 0.75rem 0 1rem;
+}
+
+.cert-title {
+  text-align: center;
+  font-size: 13pt;
+  margin: 0 0 1rem;
+}
+
+.cert-to {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.cert-body {
+  text-align: justify;
+  margin-bottom: 0.85rem;
+  text-indent: 2em;
+}
+
+.cert-signs {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2.5rem;
+  gap: 2rem;
+}
+
+.cert-signs > div {
+  text-align: center;
+  flex: 1;
+}
+
+.cert-sign-name {
+  border-top: 1px solid #111;
+  margin: 2.5rem 0 0.25rem;
+  padding-top: 0.25rem;
+  font-weight: 700;
+}
+
+.cert-sign-label {
+  font-size: 10pt;
+}
+
+.cert-footer {
+  margin-top: 2rem;
+  font-size: 10pt;
+}
+
+.cert-note {
+  font-size: 9pt;
+  font-style: italic;
+  margin-top: 0.35rem;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .certificate,
+  .certificate * {
+    visibility: visible;
+  }
+  .certificate {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    padding: 15mm;
+  }
+  .cert-toolbar {
+    display: none !important;
+  }
+  .cert-modal-backdrop {
+    display: none !important;
+  }
+  .cert-modal,
+  .cert-modal-box {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+  }
+}
+.chip.pending { background: rgba(183,193,222,0.2); color: #b7c1de; }
+.chip.approved { background: #1d3a2a; color: #4ade80; }
+.chip.processing { background: #1d2b56; color: #6f97f5; }
+.chip.completed { background: #163642; color: #2dd4bf; }
+.chip.rejected { background: #3f1d1d; color: #f87171; }.chip.pending { background: rgba(183,193,222,0.2); color: #b7c1de; }
+.chip.approved { background: #1d3a2a; color: #4ade80; }
+.chip.processing { background: #1d2b56; color: #6f97f5; }
+.chip.completed { background: #163642; color: #2dd4bf; }
+.chip.rejected { background: #3f1d1d; color: #f87171; }
+.action-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.btn-approve {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-reject {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-approve:hover,
+.btn-reject:hover {
+  opacity: 0.9;
+}
+
+.chip.approved { background: #1d3a2a; color: #4ade80; }
+.chip.rejected { background: #3f1d1d; color: #f87171; }
+.chip.completed { background: #163642; color: #2dd4bf; }
+
+.btn-clear {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
